@@ -25,6 +25,8 @@ public GameObject crosshair;
     public float recoilRotation = 4f;
     public float recoilReturnSpeed = 12f;
 
+[Header("Bullet Color")]
+public Color currentBulletColor = Color.red;
     private Vector3 gunOriginalPosition;
     private Quaternion gunOriginalRotation;
 
@@ -192,6 +194,13 @@ public GameObject crosshair;
             Quaternion.LookRotation(shootDirection)
         );
 
+        Bullet bulletScript =
+    bullet.GetComponent<Bullet>();
+
+if (bulletScript != null)
+{
+    bulletScript.SetColor(currentBulletColor);
+}
         // ==========================================
         // 7. SET BULLET SPEED
         // ==========================================

@@ -5,23 +5,19 @@ public class ColorPropagation : MonoBehaviour
     private Renderer objectRenderer;
 
     private Color currentColor;
+
     private bool hasColor = false;
 
     void Awake()
     {
-        objectRenderer = GetComponentInChildren<Renderer>();
+        objectRenderer =
+            GetComponentInChildren<Renderer>();
 
         if (objectRenderer != null)
         {
-            currentColor = objectRenderer.material.color;
+            currentColor =
+                objectRenderer.material.color;
         }
-    }
-
-    public void ApplyRandomColor()
-    {
-        Color newColor = Random.ColorHSV();
-
-        ApplyColor(newColor);
     }
 
     public void ApplyColor(Color newColor)
@@ -30,9 +26,11 @@ public class ColorPropagation : MonoBehaviour
             return;
 
         currentColor = newColor;
+
         hasColor = true;
 
-        objectRenderer.material.color = newColor;
+        objectRenderer.material.color =
+            currentColor;
     }
 
     public bool HasColor()
@@ -45,32 +43,24 @@ public class ColorPropagation : MonoBehaviour
         return currentColor;
     }
 
-    private void OnCollisionEnter(Collision collision)
+    void OnCollisionEnter(Collision collision)
     {
-        // Try the object directly first
         ColorPropagation other =
-            collision.gameObject.GetComponent<ColorPropagation>();
-
-        // If the collider is on a child object,
-        // search the parent too.
-        if (other == null)
-        {
-            other =
-                collision.gameObject.GetComponentInParent<ColorPropagation>();
-        }
+            collision.gameObject
+                .GetComponentInParent<ColorPropagation>();
 
         if (other == null)
             return;
 
-        // If THIS object has a color,
-        // give that color to the object it hit.
+        // This object is colored.
+        // Pass its color to the object it hit.
         if (hasColor)
         {
             other.ApplyColor(currentColor);
         }
 
-        // Otherwise, if the OTHER object has a color,
-        // receive its color.
+        // Otherwise receive the color
+        // from the object we collided with.
         else if (other.hasColor)
         {
             ApplyColor(other.currentColor);
