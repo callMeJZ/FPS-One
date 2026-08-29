@@ -6,8 +6,8 @@ public class BulletColorPicker : MonoBehaviour
     [Header("Gun Reference")]
     public GunMechanics gun;
 
-    [Header("Ammo UI")]
-    public AmmoUI ammoUI;
+    // [Header("Ammo UI")]
+    // public AmmoUI ammoUI;
     [Header("Selected Color Display")]
     public Image selectedColorIndicator;
 
@@ -85,10 +85,10 @@ public class BulletColorPicker : MonoBehaviour
     }
 
     // Update the ammo/current-color UI
-    if (ammoUI != null)
-    {
-        ammoUI.UpdateColorUI();
-    }
+    // if (ammoUI != null)
+    // {
+    //     ammoUI.UpdateColorUI();
+    // }
 
     Debug.Log(
         "Current Bullet Color: " +

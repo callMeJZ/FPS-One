@@ -16,12 +16,33 @@ public class AmmoUI : MonoBehaviour
     public int maxAmmo = 6;
     public int currentAmmo = 6;
 
+    private Color lastColor;
+
     void Start()
     {
         currentAmmo = maxAmmo;
 
+        // Read the gun's starting color
+        if (gun != null)
+        {
+            lastColor = gun.currentBulletColor;
+        }
+
         UpdateAmmoUI();
         UpdateColorUI();
+    }
+
+    void Update()
+    {
+        // Keep the UI synchronized with GunMechanics.
+        if (gun == null)
+            return;
+
+        if (gun.currentBulletColor != lastColor)
+        {
+            lastColor = gun.currentBulletColor;
+            UpdateColorUI();
+        }
     }
 
     public void UpdateColorUI()
@@ -48,6 +69,13 @@ public class AmmoUI : MonoBehaviour
             return;
 
         currentAmmo--;
+
+        UpdateAmmoUI();
+    }
+
+    public void ReloadAmmo()
+    {
+        currentAmmo = maxAmmo;
 
         UpdateAmmoUI();
     }
