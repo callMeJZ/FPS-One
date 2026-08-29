@@ -46,7 +46,7 @@ public class ObjectiveUI : MonoBehaviour
             if (completed)
             {
                 display +=
-                    "[OK] " +
+                    "[DONE] " +
                     objectName +
                     " → " +
                     colorName +

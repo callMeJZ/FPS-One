@@ -198,4 +198,15 @@ public class AmmoUI : MonoBehaviour
                Mathf.Abs(a.g - b.g) < 0.05f &&
                Mathf.Abs(a.b - b.b) < 0.05f;
     }
+
+    public int GetTotalRemainingAmmo()
+{
+    return
+        redAmmo +
+        blueAmmo +
+        greenAmmo +
+        yellowAmmo +
+        purpleAmmo +
+        orangeAmmo;
+}
 }
