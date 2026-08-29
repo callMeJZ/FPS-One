@@ -12,17 +12,28 @@ public class AmmoUI : MonoBehaviour
     public TMP_Text colorText;
     public TMP_Text ammoText;
 
-    [Header("Ammo")]
-    public int maxAmmo = 6;
-    public int currentAmmo = 6;
+    [Header("Ammo Per Color")]
+    public int maxAmmoPerColor = 6;
+
+    private int redAmmo;
+    private int blueAmmo;
+    private int greenAmmo;
+    private int yellowAmmo;
+    private int purpleAmmo;
+    private int orangeAmmo;
 
     private Color lastColor;
 
     void Start()
     {
-        currentAmmo = maxAmmo;
+        // Give every color its own ammo pool.
+        redAmmo = maxAmmoPerColor;
+        blueAmmo = maxAmmoPerColor;
+        greenAmmo = maxAmmoPerColor;
+        yellowAmmo = maxAmmoPerColor;
+        purpleAmmo = maxAmmoPerColor;
+        orangeAmmo = maxAmmoPerColor;
 
-        // Read the gun's starting color
         if (gun != null)
         {
             lastColor = gun.currentBulletColor;
@@ -34,14 +45,16 @@ public class AmmoUI : MonoBehaviour
 
     void Update()
     {
-        // Keep the UI synchronized with GunMechanics.
         if (gun == null)
             return;
 
+        // Detect a color change.
         if (gun.currentBulletColor != lastColor)
         {
             lastColor = gun.currentBulletColor;
+
             UpdateColorUI();
+            UpdateAmmoUI();
         }
     }
 
@@ -59,32 +72,92 @@ public class AmmoUI : MonoBehaviour
 
         if (colorText != null)
         {
-            colorText.text = GetColorName(selectedColor);
+            colorText.text =
+                GetColorName(selectedColor);
         }
     }
 
     public void ConsumeAmmo()
     {
-        if (currentAmmo <= 0)
-            return;
+        Color color = gun.currentBulletColor;
 
-        currentAmmo--;
+        if (Approximately(color, Color.red))
+        {
+            if (redAmmo > 0)
+                redAmmo--;
+        }
+        else if (Approximately(color, Color.blue))
+        {
+            if (blueAmmo > 0)
+                blueAmmo--;
+        }
+        else if (Approximately(color, Color.green))
+        {
+            if (greenAmmo > 0)
+                greenAmmo--;
+        }
+        else if (Approximately(color, Color.yellow))
+        {
+            if (yellowAmmo > 0)
+                yellowAmmo--;
+        }
+        else if (Approximately(
+            color,
+            new Color(0.6f, 0.2f, 1f)))
+        {
+            if (purpleAmmo > 0)
+                purpleAmmo--;
+        }
+        else if (Approximately(
+            color,
+            new Color(1f, 0.5f, 0f)))
+        {
+            if (orangeAmmo > 0)
+                orangeAmmo--;
+        }
 
         UpdateAmmoUI();
     }
 
-    public void ReloadAmmo()
+    public int GetCurrentAmmo()
     {
-        currentAmmo = maxAmmo;
+        Color color = gun.currentBulletColor;
 
-        UpdateAmmoUI();
+        if (Approximately(color, Color.red))
+            return redAmmo;
+
+        if (Approximately(color, Color.blue))
+            return blueAmmo;
+
+        if (Approximately(color, Color.green))
+            return greenAmmo;
+
+        if (Approximately(color, Color.yellow))
+            return yellowAmmo;
+
+        if (Approximately(
+            color,
+            new Color(0.6f, 0.2f, 1f)))
+        {
+            return purpleAmmo;
+        }
+
+        if (Approximately(
+            color,
+            new Color(1f, 0.5f, 0f)))
+        {
+            return orangeAmmo;
+        }
+
+        return 0;
     }
 
     void UpdateAmmoUI()
     {
         if (ammoText != null)
         {
-            ammoText.text = currentAmmo.ToString("00");
+            ammoText.text =
+                GetCurrentAmmo().ToString("00");
         }
     }
 

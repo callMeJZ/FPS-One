@@ -98,9 +98,9 @@ public AmmoUI ammoUI;
             return;
 
         if (ammoUI != null &&
-    ammoUI.currentAmmo <= 0)
+    ammoUI.GetCurrentAmmo() <= 0)
 {
-    Debug.Log("Out of ammo!");
+    Debug.Log("Out of ammo for this color!");
     return;
 }
         if (bulletPrefab == null)
@@ -208,6 +208,11 @@ public AmmoUI ammoUI;
 if (bulletScript != null)
 {
     bulletScript.SetColor(currentBulletColor);
+}
+
+if (ammoUI != null)
+{
+    ammoUI.ConsumeAmmo();
 }
         // ==========================================
         // 7. SET BULLET SPEED
