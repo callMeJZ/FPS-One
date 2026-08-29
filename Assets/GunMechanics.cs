@@ -4,15 +4,16 @@ using UnityEngine;
 public class GunMechanics : MonoBehaviour
 {
     [Header("References")]
-    public Camera cam;
-    public Transform muzzlePoint;
-    public ParticleSystem muzzleFlash;
-    public ParticleSystem muzzleSmoke;
-    public Transform gunTransform;
+public Camera cam;
+public Transform muzzlePoint;
+public ParticleSystem muzzleFlash;
+public ParticleSystem muzzleSmoke;
+public Transform gunTransform;
+public GameObject crosshair;
 
-    [Header("Shooting")]
-    public float maxShootDistance = 100f;
-    public float impulseForce = 12f;
+    [Header("Bullet")]
+    public GameObject bulletPrefab;
+    public float bulletSpeed = 30f;
 
     [Header("Zoom")]
     public float defaultFOV = 60f;
@@ -24,18 +25,12 @@ public class GunMechanics : MonoBehaviour
     public float recoilRotation = 4f;
     public float recoilReturnSpeed = 12f;
 
-    [Header("Camera Recoil")]
-    public float cameraRecoilAmount = 2f;
-    public float cameraRecoilReturnSpeed = 10f;
-
     private Vector3 gunOriginalPosition;
     private Quaternion gunOriginalRotation;
 
-    private float currentCameraRecoil = 0f;
-
     void Start()
     {
-        // Automatically find the camera if not assigned
+        // Find camera automatically if not assigned
         if (cam == null)
         {
             cam = Camera.main;
@@ -46,14 +41,8 @@ public class GunMechanics : MonoBehaviour
             cam.fieldOfView = defaultFOV;
         }
 
-        // If gunTransform isn't assigned, use the weapon model
-        if (gunTransform == null)
-        {
-            Debug.LogWarning(
-                "Gun Transform is not assigned in GunMechanics."
-            );
-        }
-        else
+        // Save the gun's starting position and rotation
+        if (gunTransform != null)
         {
             gunOriginalPosition = gunTransform.localPosition;
             gunOriginalRotation = gunTransform.localRotation;
@@ -64,39 +53,66 @@ public class GunMechanics : MonoBehaviour
     {
         HandleZoom();
 
-        // LEFT CLICK = SHOOT
+        // LEFT MOUSE BUTTON = FIRE
         if (Input.GetMouseButtonDown(0))
         {
             Shoot();
         }
-
-        HandleCameraRecoil();
     }
 
     void HandleZoom()
+{
+    if (cam == null)
+        return;
+
+    // Right mouse button = scope
+    bool isScoped = Input.GetMouseButton(1);
+
+    // Normal FOV or zoomed FOV
+    float targetFOV =
+        isScoped
+            ? zoomedFOV
+            : defaultFOV;
+
+    // Smooth camera zoom
+    cam.fieldOfView = Mathf.Lerp(
+        cam.fieldOfView,
+        targetFOV,
+        Time.deltaTime * zoomSpeed
+    );
+
+    // Show or hide crosshair
+    if (crosshair != null)
     {
-        if (cam == null)
-            return;
-
-        float targetFOV =
-            Input.GetMouseButton(1)
-                ? zoomedFOV
-                : defaultFOV;
-
-        cam.fieldOfView = Mathf.Lerp(
-            cam.fieldOfView,
-            targetFOV,
-            Time.deltaTime * zoomSpeed
-        );
+        crosshair.SetActive(isScoped);
     }
+}
 
     void Shoot()
     {
         if (cam == null)
             return;
 
+        if (bulletPrefab == null)
+        {
+            Debug.LogError(
+                "Bullet Prefab is not assigned in GunMechanics."
+            );
+
+            return;
+        }
+
+        if (muzzlePoint == null)
+        {
+            Debug.LogError(
+                "Muzzle Point is not assigned in GunMechanics."
+            );
+
+            return;
+        }
+
         // ==========================================
-        // MUZZLE FLASH
+        // 1. MUZZLE FLASH
         // ==========================================
 
         if (muzzleFlash != null)
@@ -108,6 +124,11 @@ public class GunMechanics : MonoBehaviour
 
             muzzleFlash.Play();
         }
+
+        // ==========================================
+        // 2. MUZZLE SMOKE
+        // ==========================================
+
         if (muzzleSmoke != null)
         {
             muzzleSmoke.Stop(
@@ -117,8 +138,9 @@ public class GunMechanics : MonoBehaviour
 
             muzzleSmoke.Play();
         }
+
         // ==========================================
-        // GUN RECOIL
+        // 3. GUN RECOIL
         // ==========================================
 
         if (gunTransform != null)
@@ -127,13 +149,7 @@ public class GunMechanics : MonoBehaviour
         }
 
         // ==========================================
-        // CAMERA RECOIL
-        // ==========================================
-
-        currentCameraRecoil = cameraRecoilAmount;
-
-        // ==========================================
-        // FIND TARGET USING CROSSHAIR
+        // 4. CALCULATE AIM DIRECTION
         // ==========================================
 
         Ray cameraRay = cam.ViewportPointToRay(
@@ -147,7 +163,7 @@ public class GunMechanics : MonoBehaviour
         if (Physics.Raycast(
             cameraRay,
             out cameraHit,
-            maxShootDistance
+            1000f
         ))
         {
             targetPoint = cameraHit.point;
@@ -156,53 +172,48 @@ public class GunMechanics : MonoBehaviour
         {
             targetPoint =
                 cameraRay.origin +
-                cameraRay.direction *
-                maxShootDistance;
+                cameraRay.direction * 1000f;
         }
 
         // ==========================================
-        // SHOOT FROM MUZZLE
+        // 5. AIM FROM GUN MUZZLE TO TARGET
         // ==========================================
-
-        Vector3 shootOrigin;
-
-        if (muzzlePoint != null)
-        {
-            shootOrigin = muzzlePoint.position;
-        }
-        else
-        {
-            shootOrigin = cam.transform.position;
-        }
 
         Vector3 shootDirection =
-            (targetPoint - shootOrigin).normalized;
+            (targetPoint - muzzlePoint.position).normalized;
 
-        Ray gunRay = new Ray(
-            shootOrigin,
-            shootDirection
+        // ==========================================
+        // 6. CREATE BULLET
+        // ==========================================
+
+        GameObject bullet = Instantiate(
+            bulletPrefab,
+            muzzlePoint.position,
+            Quaternion.LookRotation(shootDirection)
         );
 
-        RaycastHit hit;
+        // ==========================================
+        // 7. SET BULLET SPEED
+        // ==========================================
 
-        if (Physics.Raycast(
-            gunRay,
-            out hit,
-            maxShootDistance
-        ))
+        Rigidbody bulletRb =
+            bullet.GetComponent<Rigidbody>();
+
+        if (bulletRb != null)
         {
-            HandleHit(hit);
+            bulletRb.linearVelocity =
+                shootDirection * bulletSpeed;
         }
     }
 
     IEnumerator GunRecoil()
     {
-        // Push gun backwards
+        // Push weapon backward
         gunTransform.localPosition =
             gunOriginalPosition +
             Vector3.back * recoilDistance;
 
-        // Kick gun upward
+        // Rotate weapon slightly upward
         gunTransform.localRotation =
             gunOriginalRotation *
             Quaternion.Euler(
@@ -211,10 +222,9 @@ public class GunMechanics : MonoBehaviour
                 0f
             );
 
-        // Wait briefly
         yield return new WaitForSeconds(0.05f);
 
-        // Return to original position
+        // Smoothly return
         while (
             Vector3.Distance(
                 gunTransform.localPosition,
@@ -246,80 +256,5 @@ public class GunMechanics : MonoBehaviour
 
         gunTransform.localRotation =
             gunOriginalRotation;
-    }
-
-    void HandleCameraRecoil()
-    {
-        if (cam == null)
-            return;
-
-        if (currentCameraRecoil > 0f)
-        {
-            currentCameraRecoil =
-                Mathf.Lerp(
-                    currentCameraRecoil,
-                    0f,
-                    Time.deltaTime *
-                    cameraRecoilReturnSpeed
-                );
-
-            // Small upward camera kick
-            // The FirstPersonController handles
-            // normal camera rotation.
-        }
-    }
-
-    void HandleHit(RaycastHit hit)
-    {
-        // =====================================
-        // CHECK FOR HUMAN TARGET
-        // =====================================
-        Debug.Log("HIT: " + hit.collider.name);
-        TargetHealth humanTarget =
-            hit.collider.GetComponentInParent<TargetHealth>();
-
-        if (humanTarget != null)
-        {
-            humanTarget.TakeDamage(
-                humanTarget.damagePerShot
-            );
-
-            return;
-        }
-
-
-        // =====================================
-        // NORMAL COLOR PROPAGATION TARGET
-        // =====================================
-
-        ColorPropagation colorObject =
-            hit.collider.GetComponentInParent<ColorPropagation>();
-
-        if (colorObject != null)
-        {
-            colorObject.ApplyRandomColor();
-        }
-
-
-        // =====================================
-        // PHYSICS
-        // =====================================
-
-        Rigidbody rb =
-            hit.collider.GetComponent<Rigidbody>();
-
-        if (rb != null)
-        {
-            rb.useGravity = true;
-
-            Vector3 bounceDirection =
-                (hit.point - transform.position).normalized
-                + Vector3.up;
-
-            rb.AddForce(
-                bounceDirection * impulseForce,
-                ForceMode.Impulse
-            );
-        }
     }
 }

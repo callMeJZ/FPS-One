@@ -431,7 +431,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &346129453
 RectTransform:
   m_ObjectHideFlags: 0
@@ -11710,16 +11710,15 @@ MonoBehaviour:
   muzzleFlash: {fileID: 1210419512}
   muzzleSmoke: {fileID: 762250239}
   gunTransform: {fileID: 2143552426}
-  maxShootDistance: 100
-  impulseForce: 12
+  crosshair: {fileID: 346129452}
+  bulletPrefab: {fileID: 1531709850241157902, guid: 72aa4efa918ee6c49ba218c661659fa8, type: 3}
+  bulletSpeed: 30
   defaultFOV: 60
   zoomedFOV: 35
   zoomSpeed: 8
   recoilDistance: 0.08
   recoilRotation: 4
   recoilReturnSpeed: 12
-  cameraRecoilAmount: 2
-  cameraRecoilReturnSpeed: 10
 --- !u!1 &1346252520
 GameObject:
   m_ObjectHideFlags: 0
