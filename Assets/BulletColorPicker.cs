@@ -6,6 +6,8 @@ public class BulletColorPicker : MonoBehaviour
     [Header("Gun Reference")]
     public GunMechanics gun;
 
+    [Header("Ammo UI")]
+    public AmmoUI ammoUI;
     [Header("Selected Color Display")]
     public Image selectedColorIndicator;
 
@@ -67,24 +69,30 @@ public class BulletColorPicker : MonoBehaviour
     }
 
     void SetColor(Color newColor)
+{
+    selectedColor = newColor;
+
+    // Update the gun's current bullet color
+    if (gun != null)
     {
-        selectedColor = newColor;
-
-        // Tell the gun which color to use
-        if (gun != null)
-        {
-            gun.currentBulletColor = selectedColor;
-        }
-
-        // Update selected-color indicator
-        if (selectedColorIndicator != null)
-        {
-            selectedColorIndicator.color = selectedColor;
-        }
-
-        Debug.Log(
-            "Current Bullet Color: " +
-            selectedColor
-        );
+        gun.currentBulletColor = selectedColor;
     }
+
+    // Update the color picker indicator
+    if (selectedColorIndicator != null)
+    {
+        selectedColorIndicator.color = selectedColor;
+    }
+
+    // Update the ammo/current-color UI
+    if (ammoUI != null)
+    {
+        ammoUI.UpdateColorUI();
+    }
+
+    Debug.Log(
+        "Current Bullet Color: " +
+        selectedColor
+    );
+}
 }

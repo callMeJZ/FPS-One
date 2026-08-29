@@ -30,6 +30,8 @@ public Color currentBulletColor = Color.red;
     private Vector3 gunOriginalPosition;
     private Quaternion gunOriginalRotation;
 
+[Header("Ammo UI")]
+public AmmoUI ammoUI;
     void Start()
     {
         // Find camera automatically if not assigned
@@ -95,6 +97,12 @@ public Color currentBulletColor = Color.red;
         if (cam == null)
             return;
 
+        if (ammoUI != null &&
+    ammoUI.currentAmmo <= 0)
+{
+    Debug.Log("Out of ammo!");
+    return;
+}
         if (bulletPrefab == null)
         {
             Debug.LogError(
@@ -213,6 +221,7 @@ if (bulletScript != null)
             bulletRb.linearVelocity =
                 shootDirection * bulletSpeed;
         }
+
     }
 
     IEnumerator GunRecoil()
