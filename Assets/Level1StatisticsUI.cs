@@ -12,17 +12,15 @@ public class Level1StatisticsUI : MonoBehaviour
     public LevelTimer timer;
     public AmmoUI ammoUI;
 
-    void Start()
-    {
-        // The statistics window should start hidden.
-        gameObject.SetActive(false);
-    }
-
     public void ShowStatistics()
     {
+        // Update the displayed statistics first
         UpdateStatistics();
 
+        // Then show the window
         gameObject.SetActive(true);
+
+        Debug.Log("Statistics Window shown.");
     }
 
     void UpdateStatistics()
@@ -61,14 +59,20 @@ public class Level1StatisticsUI : MonoBehaviour
                 ammoUI.GetTotalRemainingAmmo();
         }
 
+        int totalObjectives = 0;
+
+        if (objectives != null)
+        {
+            totalObjectives =
+                objectives.objectives.Length;
+        }
+
         string stats =
             "Correct Objects: " +
             correct +
             " / " +
-            (objectives != null
-                ? objectives.objectives.Length
-                : 0)
-            + "\n\n" +
+            totalObjectives +
+            "\n\n" +
 
             "Incorrect Attempts: " +
             incorrect +

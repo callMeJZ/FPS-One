@@ -13,7 +13,7 @@ public class Level1GameManager : MonoBehaviour
 
     void Start()
     {
-        // Automatically find references if not assigned.
+        // Automatically find references if they were not assigned.
         if (objectives == null)
         {
             objectives =
@@ -26,11 +26,30 @@ public class Level1GameManager : MonoBehaviour
                 FindFirstObjectByType<LevelTimer>();
         }
 
-        if (statisticsUI == null)
-        {
-            statisticsUI =
-                FindFirstObjectByType<Level1StatisticsUI>();
-        }
+        Debug.Log(
+            "Level1GameManager started."
+        );
+
+        Debug.Log(
+            "Objectives reference: " +
+            (objectives != null
+                ? objectives.name
+                : "NULL")
+        );
+
+        Debug.Log(
+            "Timer reference: " +
+            (timer != null
+                ? timer.name
+                : "NULL")
+        );
+
+        Debug.Log(
+            "Statistics UI reference: " +
+            (statisticsUI != null
+                ? statisticsUI.name
+                : "NULL")
+        );
     }
 
     void Update()
@@ -56,7 +75,7 @@ public class Level1GameManager : MonoBehaviour
     {
         levelWon = true;
 
-        // Stop timer
+        // Stop the timer.
         if (timer != null)
         {
             timer.StopTimer();
@@ -66,10 +85,16 @@ public class Level1GameManager : MonoBehaviour
         Debug.Log("LEVEL 1 WON!");
         Debug.Log("==============================");
 
-        // Show statistics
+        // Show statistics window.
         if (statisticsUI != null)
         {
             statisticsUI.ShowStatistics();
+        }
+        else
+        {
+            Debug.LogError(
+                "Statistics UI is NOT assigned!"
+            );
         }
     }
 
