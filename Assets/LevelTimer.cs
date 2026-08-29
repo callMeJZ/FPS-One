@@ -60,4 +60,8 @@ public class LevelTimer : MonoBehaviour
             "TIME UP! Level failed."
         );
     }
+    public void StopTimer()
+{
+    timerRunning = false;
+}
 }

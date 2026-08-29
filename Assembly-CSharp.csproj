@@ -56,6 +56,7 @@
     <Compile Include="Assets\LevelTimer.cs" />
     <Compile Include="Assets\Bullet.cs" />
     <Compile Include="Assets\ColorPropagation.cs" />
+    <Compile Include="Assets\Level1GameManager.cs" />
     <Compile Include="Assets\BulletColorPicker.cs" />
     <Compile Include="Assets\PlayerHealth.cs" />
     <Compile Include="Assets\ObjectiveTarget.cs" />
