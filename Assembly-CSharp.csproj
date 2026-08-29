@@ -58,8 +58,11 @@
     <Compile Include="Assets\ColorPropagation.cs" />
     <Compile Include="Assets\BulletColorPicker.cs" />
     <Compile Include="Assets\PlayerHealth.cs" />
+    <Compile Include="Assets\ObjectiveTarget.cs" />
     <Compile Include="Assets\GunMechanics.cs" />
+    <Compile Include="Assets\LevelObjectives.cs" />
     <Compile Include="Assets\TutorialInfo\Scripts\Readme.cs" />
+    <Compile Include="Assets\ObjectiveUI.cs" />
     <Compile Include="Assets\TargetHealth.cs" />
     <Compile Include="Assets\FirsPersonController.cs" />
     <Compile Include="Assets\Animation\PlayerMovement.cs" />

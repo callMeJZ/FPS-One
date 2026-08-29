@@ -51,20 +51,58 @@ public class Bullet : MonoBehaviour
     }
 
     void OnCollisionEnter(Collision collision)
+{
+    ObjectiveTarget objective =
+        collision.gameObject
+            .GetComponentInParent<ObjectiveTarget>();
+
+    if (objective != null)
     {
-        // Find a ColorPropagation component
-        // on the object that was hit or its parent.
-        ColorPropagation target =
+        ColorPropagation colorTarget =
             collision.gameObject
                 .GetComponentInParent<ColorPropagation>();
 
-        if (target != null)
+        if (colorTarget != null)
         {
-            // Transfer THIS bullet's color.
-            target.ApplyColor(bulletColor);
+            colorTarget.ApplyColor(bulletColor);
         }
 
-        // Destroy the bullet after impact.
+        LevelObjectives manager =
+            FindFirstObjectByType<LevelObjectives>();
+
+        if (manager != null)
+        {
+            Color requiredColor =
+                objective.GetRequiredColor();
+
+            if (!Approximately(
+                bulletColor,
+                requiredColor))
+            {
+                manager.RegisterIncorrectObject();
+            }
+        }
+
         Destroy(gameObject);
+        return;
     }
+
+    ColorPropagation target =
+        collision.gameObject
+            .GetComponentInParent<ColorPropagation>();
+
+    if (target != null)
+    {
+        target.ApplyColor(bulletColor);
+    }
+
+    Destroy(gameObject);
+}
+
+bool Approximately(Color a, Color b)
+{
+    return Mathf.Abs(a.r - b.r) < 0.05f &&
+           Mathf.Abs(a.g - b.g) < 0.05f &&
+           Mathf.Abs(a.b - b.b) < 0.05f;
+}
 }
