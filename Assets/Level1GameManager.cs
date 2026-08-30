@@ -136,6 +136,11 @@ public class Level1GameManager : MonoBehaviour
     Debug.Log("TIME RAN OUT!");
     Debug.Log("==============================");
 
+    // Unlock and show the mouse cursor
+    // so the player can click the Lose UI.
+    Cursor.lockState = CursorLockMode.None;
+    Cursor.visible = true;
+
     if (loseUI != null)
     {
         loseUI.ShowLoseWindow();
