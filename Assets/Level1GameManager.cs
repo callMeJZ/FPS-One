@@ -13,6 +13,8 @@ public class Level1GameManager : MonoBehaviour
     private bool levelWon = false;
     private bool levelLost = false;
 
+    [Header("Lose UI")]
+    public Level1LoseUI loseUI;
     void Start()
     {
         // Automatically find references if they are not assigned.
@@ -121,17 +123,30 @@ public class Level1GameManager : MonoBehaviour
     }
 
     void LoseLevel()
+{
+    levelLost = true;
+
+    if (timer != null)
     {
-        levelLost = true;
-
-        Debug.Log("==============================");
-        Debug.Log("LEVEL 1 LOST!");
-        Debug.Log("TIME RAN OUT!");
-        Debug.Log("==============================");
-
-        // Restart Level 1.
-        RestartLevel();
+        timer.StopTimer();
     }
+
+    Debug.Log("==============================");
+    Debug.Log("LEVEL 1 LOST!");
+    Debug.Log("TIME RAN OUT!");
+    Debug.Log("==============================");
+
+    if (loseUI != null)
+    {
+        loseUI.ShowLoseWindow();
+    }
+    else
+    {
+        Debug.LogError(
+            "Lose UI is NOT assigned!"
+        );
+    }
+}
 
     void RestartLevel()
     {
@@ -152,4 +167,14 @@ public class Level1GameManager : MonoBehaviour
     {
         return levelLost;
     }
+
+    public void RetryLevel()
+{
+    Scene currentScene =
+        SceneManager.GetActiveScene();
+
+    SceneManager.LoadScene(
+        currentScene.buildIndex
+    );
+}
 }
