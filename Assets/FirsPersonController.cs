@@ -7,27 +7,42 @@ public class FirstPersonController : MonoBehaviour
     public float walkSpeed = 3f;
     public float runSpeed = 6f;
 
+    [Header("Jump")]
+    public float jumpHeight = 1.5f;
+    public float gravity = -20f;
+
     [Header("Mouse Look")]
-    public float mouseSensitivity = 2.0f;
+    public float mouseSensitivity = 2f;
 
     [Header("References")]
+    public Transform playerCamera;
     public Animator animator;
 
     private CharacterController controller;
-    private Transform cameraTransform;
 
     private float xRotation = 0f;
+    private float verticalVelocity = -2f;
 
     void Start()
     {
         controller =
             GetComponent<CharacterController>();
 
-        cameraTransform =
-            Camera.main.transform;
+        // Automatically find the camera under Player
+        // if it has not been assigned manually.
+        if (playerCamera == null)
+        {
+            Camera childCamera =
+                GetComponentInChildren<Camera>();
 
-        // Automatically find the Animator
-        // on the player model if not assigned.
+            if (childCamera != null)
+            {
+                playerCamera =
+                    childCamera.transform;
+            }
+        }
+
+        // Automatically find Animator on the model.
         if (animator == null)
         {
             animator =
@@ -44,18 +59,34 @@ public class FirstPersonController : MonoBehaviour
     {
         HandleLook();
         HandleMovement();
+        HandleJump();
+        ApplyGravity();
         UpdateAnimation();
     }
 
     void HandleLook()
     {
+        // Do not process FPS camera look
+        // while the third-person demo camera is active.
+        if (playerCamera == null)
+            return;
+
+        Camera fpsCamera =
+            playerCamera.GetComponent<Camera>();
+
+        if (fpsCamera == null ||
+            !fpsCamera.gameObject.activeInHierarchy)
+        {
+            return;
+        }
+
         float mouseX =
-            Input.GetAxis("Mouse X")
-            * mouseSensitivity;
+            Input.GetAxis("Mouse X") *
+            mouseSensitivity;
 
         float mouseY =
-            Input.GetAxis("Mouse Y")
-            * mouseSensitivity;
+            Input.GetAxis("Mouse Y") *
+            mouseSensitivity;
 
         xRotation -= mouseY;
 
@@ -66,7 +97,7 @@ public class FirstPersonController : MonoBehaviour
                 90f
             );
 
-        cameraTransform.localRotation =
+        playerCamera.localRotation =
             Quaternion.Euler(
                 xRotation,
                 0f,
@@ -80,33 +111,68 @@ public class FirstPersonController : MonoBehaviour
 
     void HandleMovement()
     {
-        float horizontal =
+        float x =
             Input.GetAxis("Horizontal");
 
-        float vertical =
+        float z =
             Input.GetAxis("Vertical");
 
-        bool isRunning =
-            Input.GetKey(KeyCode.LeftShift);
-
-        float currentSpeed =
-            isRunning
-                ? runSpeed
-                : walkSpeed;
-
         Vector3 move =
-            transform.right * horizontal +
-            transform.forward * vertical;
+            transform.right * x +
+            transform.forward * z;
 
-        // Prevent diagonal movement from being faster.
         if (move.magnitude > 1f)
         {
             move.Normalize();
         }
 
+        bool isRunning =
+            Input.GetKey(KeyCode.LeftShift);
+
+        float speed =
+            isRunning
+                ? runSpeed
+                : walkSpeed;
+
         controller.Move(
             move *
-            currentSpeed *
+            speed *
+            Time.deltaTime
+        );
+    }
+
+    void HandleJump()
+    {
+        if (controller.isGrounded &&
+            verticalVelocity < 0f)
+        {
+            verticalVelocity = -2f;
+        }
+
+        if (Input.GetKeyDown(KeyCode.Space) &&
+            controller.isGrounded)
+        {
+            verticalVelocity =
+                Mathf.Sqrt(
+                    jumpHeight *
+                    -2f *
+                    gravity
+                );
+        }
+    }
+
+    void ApplyGravity()
+    {
+        verticalVelocity +=
+            gravity *
+            Time.deltaTime;
+
+        Vector3 verticalMove =
+            Vector3.up *
+            verticalVelocity;
+
+        controller.Move(
+            verticalMove *
             Time.deltaTime
         );
     }
@@ -116,37 +182,47 @@ public class FirstPersonController : MonoBehaviour
         if (animator == null)
             return;
 
-        float horizontal =
+        // Jump animation
+        if (!controller.isGrounded)
+        {
+            animator.SetFloat(
+                "Blend",
+                7f,
+                0.05f,
+                Time.deltaTime
+            );
+
+            return;
+        }
+
+        float x =
             Input.GetAxis("Horizontal");
 
-        float vertical =
+        float z =
             Input.GetAxis("Vertical");
 
         Vector2 input =
-            new Vector2(
-                horizontal,
-                vertical
-            );
+            new Vector2(x, z);
 
-        float inputMagnitude =
-            Mathf.Clamp01(
-                input.magnitude
-            );
+        bool moving =
+            input.magnitude > 0.01f;
 
         bool isRunning =
             Input.GetKey(KeyCode.LeftShift);
 
-        float targetBlend = 0f;
+        float blend = 0f;
 
-        if (inputMagnitude > 0.01f)
+        if (moving)
         {
-            targetBlend =
-                isRunning ? 6f : 3f;
+            blend =
+                isRunning
+                    ? 6f
+                    : 3f;
         }
 
         animator.SetFloat(
             "Blend",
-            targetBlend,
+            blend,
             0.1f,
             Time.deltaTime
         );
