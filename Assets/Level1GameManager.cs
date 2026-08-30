@@ -16,7 +16,8 @@ public class Level1GameManager : MonoBehaviour
 
     [Header("Lose UI")]
     public Level1LoseUI loseUI;
-
+    [Header("Final Game UI")]
+    public GameCompleteUI gameCompleteUI;
     private bool levelWon = false;
     private bool levelLost = false;
 
@@ -194,6 +195,41 @@ public class Level1GameManager : MonoBehaviour
         SceneManager.LoadScene("Level2");
     }
 
+    public void FinishGame()
+{
+    Debug.Log("==============================");
+    Debug.Log("GAME COMPLETED!");
+    Debug.Log("==============================");
+
+    Cursor.lockState =
+        CursorLockMode.None;
+
+    Cursor.visible = true;
+
+    // Stop time just in case.
+    if (timer != null)
+    {
+        timer.StopTimer();
+    }
+    if (gameCompleteUI != null)
+    {
+        gameCompleteUI.ShowGameComplete();
+    }
+    else
+    {
+        Debug.LogError(
+            "Game Complete UI is NOT assigned!"
+        );
+    }
+    // Temporarily stop gameplay.
+    //Time.timeScale = 0f;
+}
+public void RestartEntireGame()
+{
+    Time.timeScale = 1f;
+
+    SceneManager.LoadScene("Level1");
+}
     public bool HasWon()
     {
         return levelWon;
