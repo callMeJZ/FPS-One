@@ -11,6 +11,7 @@ public class LevelTimer : MonoBehaviour
 
     private float currentTime;
     private bool timerRunning = true;
+    private bool timeExpired = false;
 
     void Start()
     {
@@ -55,17 +56,25 @@ public class LevelTimer : MonoBehaviour
     void TimerEnded()
     {
         timerRunning = false;
+        timeExpired = true;
 
         Debug.Log(
             "TIME UP! Level failed."
         );
     }
+
     public void StopTimer()
-{
-    timerRunning = false;
-}
-public float GetRemainingTime()
-{
-    return currentTime;
-}
+    {
+        timerRunning = false;
+    }
+
+    public float GetRemainingTime()
+    {
+        return currentTime;
+    }
+
+    public bool HasTimeExpired()
+    {
+        return timeExpired;
+    }
 }

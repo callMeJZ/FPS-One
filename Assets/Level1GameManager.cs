@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Level1GameManager : MonoBehaviour
 {
@@ -10,10 +11,11 @@ public class Level1GameManager : MonoBehaviour
     public Level1StatisticsUI statisticsUI;
 
     private bool levelWon = false;
+    private bool levelLost = false;
 
     void Start()
     {
-        // Automatically find references if they were not assigned.
+        // Automatically find references if they are not assigned.
         if (objectives == null)
         {
             objectives =
@@ -24,6 +26,12 @@ public class Level1GameManager : MonoBehaviour
         {
             timer =
                 FindFirstObjectByType<LevelTimer>();
+        }
+
+        if (statisticsUI == null)
+        {
+            statisticsUI =
+                FindFirstObjectByType<Level1StatisticsUI>();
         }
 
         Debug.Log(
@@ -54,10 +62,15 @@ public class Level1GameManager : MonoBehaviour
 
     void Update()
     {
-        if (levelWon)
+        if (levelWon || levelLost)
             return;
 
         CheckWinCondition();
+
+        if (levelWon)
+            return;
+
+        CheckLoseCondition();
     }
 
     void CheckWinCondition()
@@ -71,11 +84,21 @@ public class Level1GameManager : MonoBehaviour
         }
     }
 
+    void CheckLoseCondition()
+    {
+        if (timer == null)
+            return;
+
+        if (timer.HasTimeExpired())
+        {
+            LoseLevel();
+        }
+    }
+
     void WinLevel()
     {
         levelWon = true;
 
-        // Stop the timer.
         if (timer != null)
         {
             timer.StopTimer();
@@ -85,7 +108,6 @@ public class Level1GameManager : MonoBehaviour
         Debug.Log("LEVEL 1 WON!");
         Debug.Log("==============================");
 
-        // Show statistics window.
         if (statisticsUI != null)
         {
             statisticsUI.ShowStatistics();
@@ -98,8 +120,36 @@ public class Level1GameManager : MonoBehaviour
         }
     }
 
+    void LoseLevel()
+    {
+        levelLost = true;
+
+        Debug.Log("==============================");
+        Debug.Log("LEVEL 1 LOST!");
+        Debug.Log("TIME RAN OUT!");
+        Debug.Log("==============================");
+
+        // Restart Level 1.
+        RestartLevel();
+    }
+
+    void RestartLevel()
+    {
+        Scene currentScene =
+            SceneManager.GetActiveScene();
+
+        SceneManager.LoadScene(
+            currentScene.buildIndex
+        );
+    }
+
     public bool HasWon()
     {
         return levelWon;
+    }
+
+    public bool HasLost()
+    {
+        return levelLost;
     }
 }
