@@ -3,21 +3,25 @@ using UnityEngine.SceneManagement;
 
 public class Level1GameManager : MonoBehaviour
 {
+    [Header("Level Settings")]
+    public int levelNumber = 1;
+
     [Header("Level References")]
     public LevelObjectives objectives;
     public LevelTimer timer;
+    public AmmoUI ammoUI;
 
     [Header("Statistics")]
     public Level1StatisticsUI statisticsUI;
 
+    [Header("Lose UI")]
+    public Level1LoseUI loseUI;
+
     private bool levelWon = false;
     private bool levelLost = false;
 
-    [Header("Lose UI")]
-    public Level1LoseUI loseUI;
     void Start()
     {
-        // Automatically find references if they are not assigned.
         if (objectives == null)
         {
             objectives =
@@ -30,35 +34,28 @@ public class Level1GameManager : MonoBehaviour
                 FindFirstObjectByType<LevelTimer>();
         }
 
+        if (ammoUI == null)
+        {
+            ammoUI =
+                FindFirstObjectByType<AmmoUI>();
+        }
+
         if (statisticsUI == null)
         {
             statisticsUI =
                 FindFirstObjectByType<Level1StatisticsUI>();
         }
 
-        Debug.Log(
-            "Level1GameManager started."
-        );
+        if (loseUI == null)
+        {
+            loseUI =
+                FindFirstObjectByType<Level1LoseUI>();
+        }
 
         Debug.Log(
-            "Objectives reference: " +
-            (objectives != null
-                ? objectives.name
-                : "NULL")
-        );
-
-        Debug.Log(
-            "Timer reference: " +
-            (timer != null
-                ? timer.name
-                : "NULL")
-        );
-
-        Debug.Log(
-            "Statistics UI reference: " +
-            (statisticsUI != null
-                ? statisticsUI.name
-                : "NULL")
+            "Level " +
+            levelNumber +
+            " Game Manager started."
         );
     }
 
@@ -88,12 +85,23 @@ public class Level1GameManager : MonoBehaviour
 
     void CheckLoseCondition()
     {
-        if (timer == null)
-            return;
-
-        if (timer.HasTimeExpired())
+        // Timer failure
+        if (timer != null &&
+            timer.HasTimeExpired())
         {
-            LoseLevel();
+            LoseLevel("TIME RAN OUT!");
+            return;
+        }
+
+        // Ammo failure
+        if (ammoUI != null &&
+            ammoUI.GetTotalRemainingAmmo() <= 0)
+        {
+            if (objectives == null ||
+                !objectives.AreObjectivesComplete())
+            {
+                LoseLevel("OUT OF AMMO!");
+            }
         }
     }
 
@@ -106,8 +114,19 @@ public class Level1GameManager : MonoBehaviour
             timer.StopTimer();
         }
 
+        Cursor.lockState =
+            CursorLockMode.None;
+
+        Cursor.visible = true;
+
         Debug.Log("==============================");
-        Debug.Log("LEVEL 1 WON!");
+
+        Debug.Log(
+            "LEVEL " +
+            levelNumber +
+            " WON!"
+        );
+
         Debug.Log("==============================");
 
         if (statisticsUI != null)
@@ -122,38 +141,45 @@ public class Level1GameManager : MonoBehaviour
         }
     }
 
-    void LoseLevel()
-{
-    levelLost = true;
-
-    if (timer != null)
+    void LoseLevel(string reason)
     {
-        timer.StopTimer();
-    }
+        levelLost = true;
 
-    Debug.Log("==============================");
-    Debug.Log("LEVEL 1 LOST!");
-    Debug.Log("TIME RAN OUT!");
-    Debug.Log("==============================");
+        if (timer != null)
+        {
+            timer.StopTimer();
+        }
 
-    // Unlock and show the mouse cursor
-    // so the player can click the Lose UI.
-    Cursor.lockState = CursorLockMode.None;
-    Cursor.visible = true;
+        Cursor.lockState =
+            CursorLockMode.None;
 
-    if (loseUI != null)
-    {
-        loseUI.ShowLoseWindow();
-    }
-    else
-    {
-        Debug.LogError(
-            "Lose UI is NOT assigned!"
+        Cursor.visible = true;
+
+        Debug.Log("==============================");
+
+        Debug.Log(
+            "LEVEL " +
+            levelNumber +
+            " LOST!"
         );
-    }
-}
 
-    void RestartLevel()
+        Debug.Log(reason);
+
+        Debug.Log("==============================");
+
+        if (loseUI != null)
+        {
+            loseUI.ShowLoseWindow(reason);
+        }
+        else
+        {
+            Debug.LogError(
+                "Lose UI is NOT assigned!"
+            );
+        }
+    }
+
+    public void RetryLevel()
     {
         Scene currentScene =
             SceneManager.GetActiveScene();
@@ -161,6 +187,11 @@ public class Level1GameManager : MonoBehaviour
         SceneManager.LoadScene(
             currentScene.buildIndex
         );
+    }
+
+    public void ContinueToLevel2()
+    {
+        SceneManager.LoadScene("Level2");
     }
 
     public bool HasWon()
@@ -172,14 +203,4 @@ public class Level1GameManager : MonoBehaviour
     {
         return levelLost;
     }
-
-    public void RetryLevel()
-{
-    Scene currentScene =
-        SceneManager.GetActiveScene();
-
-    SceneManager.LoadScene(
-        currentScene.buildIndex
-    );
-}
 }

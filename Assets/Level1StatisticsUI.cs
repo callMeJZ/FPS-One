@@ -3,6 +3,9 @@ using TMPro;
 
 public class Level1StatisticsUI : MonoBehaviour
 {
+    [Header("Level Settings")]
+    public int levelNumber = 1;
+
     [Header("UI")]
     public TMP_Text titleText;
     public TMP_Text statisticsText;
@@ -14,13 +17,13 @@ public class Level1StatisticsUI : MonoBehaviour
 
     public void ShowStatistics()
     {
-        // Update the displayed statistics first
         UpdateStatistics();
 
-        // Then show the window
         gameObject.SetActive(true);
 
-        Debug.Log("Statistics Window shown.");
+        Debug.Log(
+            "Statistics Window shown."
+        );
     }
 
     void UpdateStatistics()
@@ -28,7 +31,9 @@ public class Level1StatisticsUI : MonoBehaviour
         if (titleText != null)
         {
             titleText.text =
-                "LEVEL 1 COMPLETE!";
+                "LEVEL " +
+                levelNumber +
+                " COMPLETE!";
         }
 
         int correct = 0;

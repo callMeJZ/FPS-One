@@ -505,7 +505,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 68bef1b18e072434095f628e378b4a19, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Level1StatisticsUI
-  levelNumber: 1
+  levelNumber: 2
   titleText: {fileID: 1748794263}
   statisticsText: {fileID: 1695219768}
   objectives: {fileID: 1447310298}
@@ -1092,7 +1092,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ObjectiveTarget
   objectDisplayName: 
-  requiredColor: {r: 0, g: 0, b: 1, a: 1}
+  requiredColor: {r: 0, g: 1, b: 0, a: 1}
 --- !u!1 &420749986
 GameObject:
   m_ObjectHideFlags: 0
@@ -7656,7 +7656,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ObjectiveTarget
   objectDisplayName: 
-  requiredColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  requiredColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!1 &1049271845
 GameObject:
   m_ObjectHideFlags: 0
@@ -8384,7 +8384,7 @@ GameObject:
   - component: {fileID: 1190675352}
   - component: {fileID: 1190675351}
   m_Layer: 0
-  m_Name: Level1GameManager
+  m_Name: Level2GameManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8402,6 +8402,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5985eb838b04c074a87eb09c4f811ef8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Level1GameManager
+  levelNumber: 2
   objectives: {fileID: 1447310298}
   timer: {fileID: 1095858714}
   ammoUI: {fileID: 1897552967}
@@ -14002,7 +14003,7 @@ GameObject:
   - component: {fileID: 1447310299}
   - component: {fileID: 1447310298}
   m_Layer: 0
-  m_Name: Level1Objectives
+  m_Name: Level2Objectives
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -14209,7 +14210,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ObjectiveTarget
   objectDisplayName: 
-  requiredColor: {r: 1, g: 0, b: 0, a: 1}
+  requiredColor: {r: 0, g: 0, b: 1, a: 1}
 --- !u!1 &1468436695
 GameObject:
   m_ObjectHideFlags: 0
@@ -16161,7 +16162,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ObjectiveTarget
   objectDisplayName: 
-  requiredColor: {r: 0, g: 1, b: 0, a: 1}
+  requiredColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
 --- !u!1 &1893796050
 GameObject:
   m_ObjectHideFlags: 0
@@ -16244,19 +16245,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1893796053}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1190675351}
-        m_TargetAssemblyTypeName: Level1GameManager, Assembly-CSharp
-        m_MethodName: ContinueToLevel2
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &1893796053
 MonoBehaviour:
   m_ObjectHideFlags: 0
