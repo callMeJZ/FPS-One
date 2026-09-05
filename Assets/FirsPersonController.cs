@@ -56,13 +56,11 @@ public class FirstPersonController : MonoBehaviour
     }
 
     void Update()
-    {
-        HandleLook();
-        HandleMovement();
-        HandleJump();
-        ApplyGravity();
-        UpdateAnimation();
-    }
+{
+    HandleLook();
+    HandleMovementAndJump();
+    UpdateAnimation();
+}
 
     void HandleLook()
     {
@@ -109,122 +107,213 @@ public class FirstPersonController : MonoBehaviour
         );
     }
 
-    void HandleMovement()
+//     void HandleMovement()
+//     {
+//         float x =
+//             Input.GetAxis("Horizontal");
+
+//         float z =
+//             Input.GetAxis("Vertical");
+
+//         Vector3 move =
+//             transform.right * x +
+//             transform.forward * z;
+
+//         if (move.magnitude > 1f)
+//         {
+//             move.Normalize();
+//         }
+
+//         bool isRunning =
+//             Input.GetKey(KeyCode.LeftShift);
+
+//         float speed =
+//             isRunning
+//                 ? runSpeed
+//                 : walkSpeed;
+
+//         controller.Move(
+//             move *
+//             speed *
+//             Time.deltaTime
+//         );
+//     }
+
+//     void HandleJump()
+// {
+//     Debug.Log(
+//         "Grounded: " +
+//         controller.isGrounded
+//     );
+
+//     if (controller.isGrounded &&
+//         verticalVelocity < 0f)
+//     {
+//         verticalVelocity = -2f;
+//     }
+
+//     if (Input.GetKeyDown(KeyCode.Space))
+//     {
+//         Debug.Log("SPACE DETECTED");
+
+//         if (controller.isGrounded)
+//         {
+//             verticalVelocity =
+//                 Mathf.Sqrt(
+//                     jumpHeight *
+//                     -2f *
+//                     gravity
+//                 );
+
+//             Debug.Log("JUMP FIRED");
+//         }
+//         else
+//         {
+//             Debug.Log(
+//                 "SPACE PRESSED BUT PLAYER IS NOT GROUNDED"
+//             );
+//         }
+//     }
+// }
+
+//     void ApplyGravity()
+// {
+//     if (!controller.isGrounded)
+//     {
+//         verticalVelocity +=
+//             gravity * Time.deltaTime;
+//     }
+
+//     Vector3 verticalMove =
+//         Vector3.up * verticalVelocity;
+
+//     controller.Move(
+//         verticalMove * Time.deltaTime
+//     );
+// }
+void HandleMovementAndJump()
+{
+    // --------------------------------
+    // 1. Ground check
+    // --------------------------------
+    bool grounded = controller.isGrounded;
+
+    // Keep the player attached to the floor.
+    if (grounded && verticalVelocity < 0f)
     {
-        float x =
-            Input.GetAxis("Horizontal");
-
-        float z =
-            Input.GetAxis("Vertical");
-
-        Vector3 move =
-            transform.right * x +
-            transform.forward * z;
-
-        if (move.magnitude > 1f)
-        {
-            move.Normalize();
-        }
-
-        bool isRunning =
-            Input.GetKey(KeyCode.LeftShift);
-
-        float speed =
-            isRunning
-                ? runSpeed
-                : walkSpeed;
-
-        controller.Move(
-            move *
-            speed *
-            Time.deltaTime
-        );
+        verticalVelocity = -2f;
     }
 
-    void HandleJump()
-    {
-        if (controller.isGrounded &&
-            verticalVelocity < 0f)
-        {
-            verticalVelocity = -2f;
-        }
+    // --------------------------------
+    // 2. Read movement input
+    // --------------------------------
+    float x =
+        Input.GetAxis("Horizontal");
 
-        if (Input.GetKeyDown(KeyCode.Space) &&
-            controller.isGrounded)
-        {
-            verticalVelocity =
-                Mathf.Sqrt(
-                    jumpHeight *
-                    -2f *
-                    gravity
-                );
-        }
+    float z =
+        Input.GetAxis("Vertical");
+
+    Vector3 move =
+        transform.right * x +
+        transform.forward * z;
+
+    // Prevent faster diagonal movement.
+    if (move.magnitude > 1f)
+    {
+        move.Normalize();
     }
 
-    void ApplyGravity()
+    bool isRunning =
+        Input.GetKey(KeyCode.LeftShift);
+
+    float speed =
+        isRunning
+            ? runSpeed
+            : walkSpeed;
+
+    move *= speed;
+
+    // --------------------------------
+    // 3. Jump
+    // --------------------------------
+    if (Input.GetKeyDown(KeyCode.Space) &&
+        grounded)
     {
-        verticalVelocity +=
-            gravity *
-            Time.deltaTime;
-
-        Vector3 verticalMove =
-            Vector3.up *
-            verticalVelocity;
-
-        controller.Move(
-            verticalMove *
-            Time.deltaTime
-        );
-    }
-
-    void UpdateAnimation()
-    {
-        if (animator == null)
-            return;
-
-        // Jump animation
-        if (!controller.isGrounded)
-        {
-            animator.SetFloat(
-                "Blend",
-                7f,
-                0.05f,
-                Time.deltaTime
+        verticalVelocity =
+            Mathf.Sqrt(
+                jumpHeight *
+                -2f *
+                gravity
             );
 
-            return;
-        }
+        Debug.Log("JUMP FIRED");
+    }
 
-        float x =
-            Input.GetAxis("Horizontal");
+    // --------------------------------
+    // 4. Gravity
+    // --------------------------------
+    verticalVelocity +=
+        gravity * Time.deltaTime;
 
-        float z =
-            Input.GetAxis("Vertical");
+    // Add vertical movement to the
+    // same movement vector.
+    move.y = verticalVelocity;
 
-        Vector2 input =
-            new Vector2(x, z);
+    // --------------------------------
+    // 5. ONE CharacterController.Move
+    // --------------------------------
+    controller.Move(
+        move * Time.deltaTime
+    );
+}   
+ void UpdateAnimation()
+{
+    if (animator == null)
+        return;
 
-        bool moving =
-            input.magnitude > 0.01f;
-
-        bool isRunning =
-            Input.GetKey(KeyCode.LeftShift);
-
-        float blend = 0f;
-
-        if (moving)
-        {
-            blend =
-                isRunning
-                    ? 6f
-                    : 3f;
-        }
-
+    // Jump animation while airborne.
+    if (!controller.isGrounded)
+    {
         animator.SetFloat(
             "Blend",
-            blend,
-            0.1f,
+            7f,
+            0.15f,
             Time.deltaTime
         );
+
+        return;
     }
+
+    float x =
+        Input.GetAxis("Horizontal");
+
+    float z =
+        Input.GetAxis("Vertical");
+
+    Vector2 input =
+        new Vector2(x, z);
+
+    bool moving =
+        input.magnitude > 0.01f;
+
+    bool isRunning =
+        Input.GetKey(KeyCode.LeftShift);
+
+    float blend = 0f;
+
+    if (moving)
+    {
+        blend =
+            isRunning
+                ? 6f
+                : 3f;
+    }
+
+    animator.SetFloat(
+        "Blend",
+        blend,
+        0.15f,
+        Time.deltaTime
+    );
+}
 }
