@@ -4,12 +4,12 @@ using UnityEngine;
 public class GunMechanics : MonoBehaviour
 {
     [Header("References")]
-public Camera cam;
-public Transform muzzlePoint;
-public ParticleSystem muzzleFlash;
-public ParticleSystem muzzleSmoke;
-public Transform gunTransform;
-public GameObject crosshair;
+    public Camera cam;
+    public Transform muzzlePoint;
+    public ParticleSystem muzzleFlash;
+    public ParticleSystem muzzleSmoke;
+    public Transform gunTransform;
+    public GameObject crosshair;
 
     [Header("Bullet")]
     public GameObject bulletPrefab;
@@ -25,13 +25,12 @@ public GameObject crosshair;
     public float recoilRotation = 4f;
     public float recoilReturnSpeed = 12f;
 
-[Header("Bullet Color")]
-public Color currentBulletColor = Color.red;
+    [Header("Ammo UI")]
+    public AmmoUI ammoUI;
+
     private Vector3 gunOriginalPosition;
     private Quaternion gunOriginalRotation;
 
-[Header("Ammo UI")]
-public AmmoUI ammoUI;
     void Start()
     {
         // Find camera automatically if not assigned
@@ -65,44 +64,47 @@ public AmmoUI ammoUI;
     }
 
     void HandleZoom()
-{
-    if (cam == null)
-        return;
-
-    // Right mouse button = scope
-    bool isScoped = Input.GetMouseButton(1);
-
-    // Normal FOV or zoomed FOV
-    float targetFOV =
-        isScoped
-            ? zoomedFOV
-            : defaultFOV;
-
-    // Smooth camera zoom
-    cam.fieldOfView = Mathf.Lerp(
-        cam.fieldOfView,
-        targetFOV,
-        Time.deltaTime * zoomSpeed
-    );
-
-    // Show or hide crosshair
-    if (crosshair != null)
     {
-        crosshair.SetActive(isScoped);
+        if (cam == null)
+            return;
+
+        // Right mouse button = scope
+        bool isScoped = Input.GetMouseButton(1);
+
+        // Normal FOV or zoomed FOV
+        float targetFOV =
+            isScoped
+                ? zoomedFOV
+                : defaultFOV;
+
+        // Smooth camera zoom
+        cam.fieldOfView = Mathf.Lerp(
+            cam.fieldOfView,
+            targetFOV,
+            Time.deltaTime * zoomSpeed
+        );
+
+        // Show or hide crosshair
+        if (crosshair != null)
+        {
+            crosshair.SetActive(isScoped);
+        }
     }
-}
 
     void Shoot()
     {
         if (cam == null)
             return;
 
+        // Check ammo before shooting
         if (ammoUI != null &&
-    ammoUI.GetCurrentAmmo() <= 0)
-{
-    Debug.Log("Out of ammo for this color!");
-    return;
-}
+            ammoUI.GetCurrentAmmo() <= 0)
+        {
+            Debug.Log("Out of ammo!");
+            return;
+        }
+
+        // Check bullet prefab
         if (bulletPrefab == null)
         {
             Debug.LogError(
@@ -112,6 +114,7 @@ public AmmoUI ammoUI;
             return;
         }
 
+        // Check muzzle point
         if (muzzlePoint == null)
         {
             Debug.LogError(
@@ -202,20 +205,17 @@ public AmmoUI ammoUI;
             Quaternion.LookRotation(shootDirection)
         );
 
-        Bullet bulletScript =
-    bullet.GetComponent<Bullet>();
-
-if (bulletScript != null)
-{
-    bulletScript.SetColor(currentBulletColor);
-}
-
-if (ammoUI != null)
-{
-    ammoUI.ConsumeAmmo();
-}
         // ==========================================
-        // 7. SET BULLET SPEED
+        // 7. CONSUME AMMO
+        // ==========================================
+
+        if (ammoUI != null)
+        {
+            ammoUI.ConsumeAmmo();
+        }
+
+        // ==========================================
+        // 8. SET BULLET SPEED
         // ==========================================
 
         Rigidbody bulletRb =
@@ -226,7 +226,6 @@ if (ammoUI != null)
             bulletRb.linearVelocity =
                 shootDirection * bulletSpeed;
         }
-
     }
 
     IEnumerator GunRecoil()

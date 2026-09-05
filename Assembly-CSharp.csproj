@@ -64,13 +64,16 @@
     <Compile Include="Assets\ObjectiveTarget.cs" />
     <Compile Include="Assets\GunMechanics.cs" />
     <Compile Include="Assets\LevelObjectives.cs" />
+    <Compile Include="Assets\TrainingDummyHealth.cs" />
     <Compile Include="Assets\TutorialInfo\Scripts\Readme.cs" />
+    <Compile Include="Assets\AmmoSpawner.cs" />
     <Compile Include="Assets\GameCompleteUI.cs" />
     <Compile Include="Assets\MainMenu.cs" />
     <Compile Include="Assets\ObjectiveUI.cs" />
     <Compile Include="Assets\TargetHealth.cs" />
     <Compile Include="Assets\FirsPersonController.cs" />
     <Compile Include="Assets\Animation\PlayerMovement.cs" />
+    <Compile Include="Assets\AmmoPickup.cs" />
     <Compile Include="Assets\AmmoUI.cs" />
     <Compile Include="Assets\DemoCameraFollow.cs" />
     <Compile Include="Assets\Level1LoseUI.cs" />

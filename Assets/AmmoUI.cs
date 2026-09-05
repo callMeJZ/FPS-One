@@ -12,108 +12,35 @@ public class AmmoUI : MonoBehaviour
     public TMP_Text colorText;
     public TMP_Text ammoText;
 
-    [Header("Ammo Per Color")]
-    public int maxAmmoPerColor = 6;
+    [Header("Ammo")]
+    public int maxAmmo = 30;
 
-    private int redAmmo;
-    private int blueAmmo;
-    private int greenAmmo;
-    private int yellowAmmo;
-    private int purpleAmmo;
-    private int orangeAmmo;
-
-    private Color lastColor;
+    private int currentAmmo;
 
     void Start()
     {
-        // Give every color its own ammo pool.
-        redAmmo = maxAmmoPerColor;
-        blueAmmo = maxAmmoPerColor;
-        greenAmmo = maxAmmoPerColor;
-        yellowAmmo = maxAmmoPerColor;
-        purpleAmmo = maxAmmoPerColor;
-        orangeAmmo = maxAmmoPerColor;
-
-        if (gun != null)
-        {
-            lastColor = gun.currentBulletColor;
-        }
+        currentAmmo = maxAmmo;
 
         UpdateAmmoUI();
-        UpdateColorUI();
-    }
 
-    void Update()
-    {
-        if (gun == null)
-            return;
-
-        // Detect a color change.
-        if (gun.currentBulletColor != lastColor)
-        {
-            lastColor = gun.currentBulletColor;
-
-            UpdateColorUI();
-            UpdateAmmoUI();
-        }
-    }
-
-    public void UpdateColorUI()
-    {
-        if (gun == null)
-            return;
-
-        Color selectedColor = gun.currentBulletColor;
-
+        // Keep the old UI objects from causing errors,
+        // but they are no longer used for shooting.
         if (currentBulletColor != null)
         {
-            currentBulletColor.color = selectedColor;
+            currentBulletColor.gameObject.SetActive(false);
         }
 
         if (colorText != null)
         {
-            colorText.text =
-                GetColorName(selectedColor);
+            colorText.gameObject.SetActive(false);
         }
     }
 
     public void ConsumeAmmo()
     {
-        Color color = gun.currentBulletColor;
-
-        if (Approximately(color, Color.red))
+        if (currentAmmo > 0)
         {
-            if (redAmmo > 0)
-                redAmmo--;
-        }
-        else if (Approximately(color, Color.blue))
-        {
-            if (blueAmmo > 0)
-                blueAmmo--;
-        }
-        else if (Approximately(color, Color.green))
-        {
-            if (greenAmmo > 0)
-                greenAmmo--;
-        }
-        else if (Approximately(color, Color.yellow))
-        {
-            if (yellowAmmo > 0)
-                yellowAmmo--;
-        }
-        else if (Approximately(
-            color,
-            new Color(0.6f, 0.2f, 1f)))
-        {
-            if (purpleAmmo > 0)
-                purpleAmmo--;
-        }
-        else if (Approximately(
-            color,
-            new Color(1f, 0.5f, 0f)))
-        {
-            if (orangeAmmo > 0)
-                orangeAmmo--;
+            currentAmmo--;
         }
 
         UpdateAmmoUI();
@@ -121,92 +48,28 @@ public class AmmoUI : MonoBehaviour
 
     public int GetCurrentAmmo()
     {
-        Color color = gun.currentBulletColor;
+        return currentAmmo;
+    }
 
-        if (Approximately(color, Color.red))
-            return redAmmo;
+    public int GetTotalRemainingAmmo()
+    {
+        return currentAmmo;
+    }
 
-        if (Approximately(color, Color.blue))
-            return blueAmmo;
+    public void RefillAmmo()
+    {
+        currentAmmo = maxAmmo;
 
-        if (Approximately(color, Color.green))
-            return greenAmmo;
+        UpdateAmmoUI();
 
-        if (Approximately(color, Color.yellow))
-            return yellowAmmo;
-
-        if (Approximately(
-            color,
-            new Color(0.6f, 0.2f, 1f)))
-        {
-            return purpleAmmo;
-        }
-
-        if (Approximately(
-            color,
-            new Color(1f, 0.5f, 0f)))
-        {
-            return orangeAmmo;
-        }
-
-        return 0;
+        Debug.Log("Ammo refilled!");
     }
 
     void UpdateAmmoUI()
     {
         if (ammoText != null)
         {
-            ammoText.text =
-                GetCurrentAmmo().ToString("00");
+            ammoText.text = currentAmmo.ToString("00");
         }
     }
-
-    string GetColorName(Color color)
-    {
-        if (Approximately(color, Color.red))
-            return "RED";
-
-        if (Approximately(color, Color.blue))
-            return "BLUE";
-
-        if (Approximately(color, Color.green))
-            return "GREEN";
-
-        if (Approximately(color, Color.yellow))
-            return "YELLOW";
-
-        if (Approximately(
-            color,
-            new Color(0.6f, 0.2f, 1f)))
-        {
-            return "PURPLE";
-        }
-
-        if (Approximately(
-            color,
-            new Color(1f, 0.5f, 0f)))
-        {
-            return "ORANGE";
-        }
-
-        return "CUSTOM";
-    }
-
-    bool Approximately(Color a, Color b)
-    {
-        return Mathf.Abs(a.r - b.r) < 0.05f &&
-               Mathf.Abs(a.g - b.g) < 0.05f &&
-               Mathf.Abs(a.b - b.b) < 0.05f;
-    }
-
-    public int GetTotalRemainingAmmo()
-{
-    return
-        redAmmo +
-        blueAmmo +
-        greenAmmo +
-        yellowAmmo +
-        purpleAmmo +
-        orangeAmmo;
-}
 }
