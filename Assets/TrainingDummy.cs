@@ -8,34 +8,54 @@ public class TrainingDummy : MonoBehaviour
     private float currentHealth;
 
     [Header("UI Components")]
-    // Gumamit ng UI Image component na naka-set ang Image Type sa "Filled"
-    public Image healthBarFill; 
+    public Image healthBarFill;
     public Canvas healthBarCanvas;
+
+    [Header("Game Statistics")]
+    public GameStats gameStats;
+
+    private bool isDead = false;
 
     void Start()
     {
         currentHealth = maxHealth;
+
+        if (gameStats == null)
+        {
+            gameStats = FindFirstObjectByType<GameStats>();
+        }
+
         UpdateHealthBar();
     }
 
     void Update()
     {
-        // Para laging nakaharap sa player/camera ang Health Bar (Billboard effect)
+        // Keep the health bar facing the camera
         if (healthBarCanvas != null && Camera.main != null)
         {
             healthBarCanvas.transform.rotation = Camera.main.transform.rotation;
         }
     }
 
-    // Tatawagin ang function na ito ng iyong Player Shooting/Gun script kapag tinamaan ito
     public void TakeDamage(float damageAmount)
     {
+        if (isDead)
+            return;
+
         currentHealth -= damageAmount;
-        currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth); // Hindi bababa sa 0 ang health
+        currentHealth = Mathf.Clamp(currentHealth, 0f, maxHealth);
+
+        Debug.Log(
+            gameObject.name +
+            " took " +
+            damageAmount +
+            " damage. Remaining health: " +
+            currentHealth
+        );
 
         UpdateHealthBar();
 
-        if (currentHealth <= 0)
+        if (currentHealth <= 0f)
         {
             Die();
         }
@@ -43,16 +63,26 @@ public class TrainingDummy : MonoBehaviour
 
     void UpdateHealthBar()
     {
-        if (healthBarFill != null)
+        if (healthBarFill != null && maxHealth > 0f)
         {
-            // Ina-update ang porsyento ng green bar base sa natitirang health
             healthBarFill.fillAmount = currentHealth / maxHealth;
         }
     }
 
     void Die()
     {
-        // Pwedeng maglagay ng particle effects dito bago masira
+        if (isDead)
+            return;
+
+        isDead = true;
+
+        if (gameStats != null)
+        {
+            gameStats.RegisterDummyKilled();
+        }
+
+        Debug.Log(gameObject.name + " was killed.");
+
         Destroy(gameObject);
     }
 }

@@ -28,6 +28,9 @@ public class GunMechanics : MonoBehaviour
     [Header("Ammo UI")]
     public AmmoUI ammoUI;
 
+    [Header("Game Statistics")]
+    public GameStats gameStats;
+
     private Vector3 gunOriginalPosition;
     private Quaternion gunOriginalRotation;
 
@@ -49,6 +52,12 @@ public class GunMechanics : MonoBehaviour
         {
             gunOriginalPosition = gunTransform.localPosition;
             gunOriginalRotation = gunTransform.localRotation;
+        }
+
+        // Automatically find GameStats if not assigned
+        if (gameStats == null)
+        {
+            gameStats = FindFirstObjectByType<GameStats>();
         }
     }
 
@@ -72,10 +81,9 @@ public class GunMechanics : MonoBehaviour
         bool isScoped = Input.GetMouseButton(1);
 
         // Normal FOV or zoomed FOV
-        float targetFOV =
-            isScoped
-                ? zoomedFOV
-                : defaultFOV;
+        float targetFOV = isScoped
+            ? zoomedFOV
+            : defaultFOV;
 
         // Smooth camera zoom
         cam.fieldOfView = Mathf.Lerp(
@@ -96,7 +104,10 @@ public class GunMechanics : MonoBehaviour
         if (cam == null)
             return;
 
-        // Check ammo before shooting
+        // ==========================================
+        // 1. CHECK AMMO
+        // ==========================================
+
         if (ammoUI != null &&
             ammoUI.GetCurrentAmmo() <= 0)
         {
@@ -104,7 +115,10 @@ public class GunMechanics : MonoBehaviour
             return;
         }
 
-        // Check bullet prefab
+        // ==========================================
+        // 2. CHECK BULLET PREFAB
+        // ==========================================
+
         if (bulletPrefab == null)
         {
             Debug.LogError(
@@ -114,7 +128,10 @@ public class GunMechanics : MonoBehaviour
             return;
         }
 
-        // Check muzzle point
+        // ==========================================
+        // 3. CHECK MUZZLE POINT
+        // ==========================================
+
         if (muzzlePoint == null)
         {
             Debug.LogError(
@@ -125,7 +142,7 @@ public class GunMechanics : MonoBehaviour
         }
 
         // ==========================================
-        // 1. MUZZLE FLASH
+        // 4. MUZZLE FLASH
         // ==========================================
 
         if (muzzleFlash != null)
@@ -139,7 +156,7 @@ public class GunMechanics : MonoBehaviour
         }
 
         // ==========================================
-        // 2. MUZZLE SMOKE
+        // 5. MUZZLE SMOKE
         // ==========================================
 
         if (muzzleSmoke != null)
@@ -153,7 +170,7 @@ public class GunMechanics : MonoBehaviour
         }
 
         // ==========================================
-        // 3. GUN RECOIL
+        // 6. GUN RECOIL
         // ==========================================
 
         if (gunTransform != null)
@@ -162,7 +179,7 @@ public class GunMechanics : MonoBehaviour
         }
 
         // ==========================================
-        // 4. CALCULATE AIM DIRECTION
+        // 7. CALCULATE AIM DIRECTION
         // ==========================================
 
         Ray cameraRay = cam.ViewportPointToRay(
@@ -189,14 +206,14 @@ public class GunMechanics : MonoBehaviour
         }
 
         // ==========================================
-        // 5. AIM FROM GUN MUZZLE TO TARGET
+        // 8. AIM FROM GUN MUZZLE TO TARGET
         // ==========================================
 
         Vector3 shootDirection =
             (targetPoint - muzzlePoint.position).normalized;
 
         // ==========================================
-        // 6. CREATE BULLET
+        // 9. CREATE BULLET
         // ==========================================
 
         GameObject bullet = Instantiate(
@@ -206,7 +223,16 @@ public class GunMechanics : MonoBehaviour
         );
 
         // ==========================================
-        // 7. CONSUME AMMO
+        // 10. REGISTER SHOT
+        // ==========================================
+
+        if (gameStats != null)
+        {
+            gameStats.RegisterShot();
+        }
+
+        // ==========================================
+        // 11. CONSUME AMMO
         // ==========================================
 
         if (ammoUI != null)
@@ -215,7 +241,7 @@ public class GunMechanics : MonoBehaviour
         }
 
         // ==========================================
-        // 8. SET BULLET SPEED
+        // 12. SET BULLET SPEED
         // ==========================================
 
         Rigidbody bulletRb =

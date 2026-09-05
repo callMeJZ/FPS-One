@@ -85,6 +85,7 @@
     <Compile Include="Assets\Ilumisoft\Health System\Scripts\UI\Healthbar.cs" />
     <Compile Include="Assets\AmmoUI.cs" />
     <Compile Include="Assets\DemoCameraFollow.cs" />
+    <Compile Include="Assets\GameStats.cs" />
     <Compile Include="Assets\Level1LoseUI.cs" />
     <Compile Include="Assets\Ilumisoft\Health System\Scripts\Health.cs" />
   </ItemGroup>
