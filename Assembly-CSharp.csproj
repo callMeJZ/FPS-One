@@ -54,29 +54,39 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\CameraViewSwitcher.cs" />
+    <Compile Include="Assets\TrainingDummy.cs" />
     <Compile Include="Assets\Level1StatisticsUI.cs" />
     <Compile Include="Assets\LevelTimer.cs" />
+    <Compile Include="Assets\Ilumisoft\Health System\Demo\Scripts\DemoDummy.cs" />
     <Compile Include="Assets\Bullet.cs" />
     <Compile Include="Assets\ColorPropagation.cs" />
+    <Compile Include="Assets\Ilumisoft\Health System\Scripts\Base\HitboxComponent.cs" />
     <Compile Include="Assets\Level1GameManager.cs" />
+    <Compile Include="Assets\Ilumisoft\Health System\Scripts\Hitbox.cs" />
     <Compile Include="Assets\BulletColorPicker.cs" />
+    <Compile Include="Assets\Ilumisoft\Health System\Scripts\Base\HealthComponent.cs" />
     <Compile Include="Assets\PlayerHealth.cs" />
     <Compile Include="Assets\ObjectiveTarget.cs" />
     <Compile Include="Assets\GunMechanics.cs" />
     <Compile Include="Assets\LevelObjectives.cs" />
+    <Compile Include="Assets\DummyHealth.cs" />
     <Compile Include="Assets\TrainingDummyHealth.cs" />
     <Compile Include="Assets\TutorialInfo\Scripts\Readme.cs" />
     <Compile Include="Assets\AmmoSpawner.cs" />
     <Compile Include="Assets\GameCompleteUI.cs" />
+    <Compile Include="Assets\DummySpawner.cs" />
     <Compile Include="Assets\MainMenu.cs" />
     <Compile Include="Assets\ObjectiveUI.cs" />
     <Compile Include="Assets\TargetHealth.cs" />
+    <Compile Include="Assets\Ilumisoft\Health System\Scripts\UI\PlayerHealthbar.cs" />
     <Compile Include="Assets\FirsPersonController.cs" />
     <Compile Include="Assets\Animation\PlayerMovement.cs" />
     <Compile Include="Assets\AmmoPickup.cs" />
+    <Compile Include="Assets\Ilumisoft\Health System\Scripts\UI\Healthbar.cs" />
     <Compile Include="Assets\AmmoUI.cs" />
     <Compile Include="Assets\DemoCameraFollow.cs" />
     <Compile Include="Assets\Level1LoseUI.cs" />
+    <Compile Include="Assets\Ilumisoft\Health System\Scripts\Health.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
