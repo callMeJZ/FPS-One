@@ -60,7 +60,7 @@ public class AmmoSpawner : MonoBehaviour
 
         return new Vector3(
             randomX,
-            bounds.min.y + 0.20f,
+            bounds.min.y + 0.12f,
             randomZ
         );
     }

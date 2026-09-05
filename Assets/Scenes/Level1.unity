@@ -491,7 +491,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: RED
+  m_text: 'AMMO: '
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -7435,7 +7435,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48f8bd0a2a1f076449593b42b8074adb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BulletColorPicker
-  gun: {fileID: 1313921353}
   selectedColorIndicator: {fileID: 1983952576}
   redButton: {fileID: 1049271848}
   blueButton: {fileID: 1774460857}
@@ -7643,7 +7642,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AmmoSpawner
   ammoPrefab: {fileID: 8680797986415453456, guid: 0a38a9f2bf177bc4eae86c45604735af, type: 3}
   spawnArea: {fileID: 901725409}
-  spawnInterval: 5
+  spawnInterval: 30
 --- !u!4 &819491076
 Transform:
   m_ObjectHideFlags: 0
@@ -14466,7 +14465,6 @@ MonoBehaviour:
   recoilDistance: 0.08
   recoilRotation: 4
   recoilReturnSpeed: 12
-  currentBulletColor: {r: 1, g: 0, b: 0, a: 1}
   ammoUI: {fileID: 1897552967}
 --- !u!1 &1346252520
 GameObject:
@@ -17221,7 +17219,7 @@ MonoBehaviour:
   currentBulletColor: {fileID: 1802962048}
   colorText: {fileID: 227969078}
   ammoText: {fileID: 1151377708}
-  maxAmmoPerColor: 6
+  maxAmmo: 30
 --- !u!1 &1983952574
 GameObject:
   m_ObjectHideFlags: 0

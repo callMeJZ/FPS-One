@@ -16,41 +16,33 @@ public class Level1GameManager : MonoBehaviour
 
     [Header("Lose UI")]
     public Level1LoseUI loseUI;
+
     [Header("Final Game UI")]
     public GameCompleteUI gameCompleteUI;
+
     private bool levelWon = false;
     private bool levelLost = false;
 
     void Start()
     {
-        if (objectives == null)
-        {
-            objectives =
-                FindFirstObjectByType<LevelObjectives>();
-        }
-
         if (timer == null)
         {
-            timer =
-                FindFirstObjectByType<LevelTimer>();
+            timer = FindFirstObjectByType<LevelTimer>();
         }
 
         if (ammoUI == null)
         {
-            ammoUI =
-                FindFirstObjectByType<AmmoUI>();
+            ammoUI = FindFirstObjectByType<AmmoUI>();
         }
 
         if (statisticsUI == null)
         {
-            statisticsUI =
-                FindFirstObjectByType<Level1StatisticsUI>();
+            statisticsUI = FindFirstObjectByType<Level1StatisticsUI>();
         }
 
         if (loseUI == null)
         {
-            loseUI =
-                FindFirstObjectByType<Level1LoseUI>();
+            loseUI = FindFirstObjectByType<Level1LoseUI>();
         }
 
         Debug.Log(
@@ -65,49 +57,25 @@ public class Level1GameManager : MonoBehaviour
         if (levelWon || levelLost)
             return;
 
-        CheckWinCondition();
-
-        if (levelWon)
-            return;
-
         CheckLoseCondition();
-    }
-
-    void CheckWinCondition()
-    {
-        if (objectives == null)
-            return;
-
-        if (objectives.AreObjectivesComplete())
-        {
-            WinLevel();
-        }
     }
 
     void CheckLoseCondition()
     {
-        // Timer failure
+        // Week 11 defeat condition:
+        // The player loses when the time limit expires.
         if (timer != null &&
             timer.HasTimeExpired())
         {
             LoseLevel("TIME RAN OUT!");
-            return;
-        }
-
-        // Ammo failure
-        if (ammoUI != null &&
-            ammoUI.GetTotalRemainingAmmo() <= 0)
-        {
-            if (objectives == null ||
-                !objectives.AreObjectivesComplete())
-            {
-                LoseLevel("OUT OF AMMO!");
-            }
         }
     }
 
-    void WinLevel()
+    public void WinLevel()
     {
+        if (levelWon || levelLost)
+            return;
+
         levelWon = true;
 
         if (timer != null)
@@ -115,19 +83,15 @@ public class Level1GameManager : MonoBehaviour
             timer.StopTimer();
         }
 
-        Cursor.lockState =
-            CursorLockMode.None;
-
+        Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
         Debug.Log("==============================");
-
         Debug.Log(
             "LEVEL " +
             levelNumber +
             " WON!"
         );
-
         Debug.Log("==============================");
 
         if (statisticsUI != null)
@@ -142,8 +106,11 @@ public class Level1GameManager : MonoBehaviour
         }
     }
 
-    void LoseLevel(string reason)
+    public void LoseLevel(string reason)
     {
+        if (levelWon || levelLost)
+            return;
+
         levelLost = true;
 
         if (timer != null)
@@ -151,21 +118,16 @@ public class Level1GameManager : MonoBehaviour
             timer.StopTimer();
         }
 
-        Cursor.lockState =
-            CursorLockMode.None;
-
+        Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
         Debug.Log("==============================");
-
         Debug.Log(
             "LEVEL " +
             levelNumber +
             " LOST!"
         );
-
         Debug.Log(reason);
-
         Debug.Log("==============================");
 
         if (loseUI != null)
@@ -182,6 +144,8 @@ public class Level1GameManager : MonoBehaviour
 
     public void RetryLevel()
     {
+        Time.timeScale = 1f;
+
         Scene currentScene =
             SceneManager.GetActiveScene();
 
@@ -192,44 +156,51 @@ public class Level1GameManager : MonoBehaviour
 
     public void ContinueToLevel2()
     {
+        Time.timeScale = 1f;
+
         SceneManager.LoadScene("Level2");
     }
 
     public void FinishGame()
-{
-    Debug.Log("==============================");
-    Debug.Log("GAME COMPLETED!");
-    Debug.Log("==============================");
-
-    Cursor.lockState =
-        CursorLockMode.None;
-
-    Cursor.visible = true;
-
-    // Stop time just in case.
-    if (timer != null)
     {
-        timer.StopTimer();
-    }
-    if (gameCompleteUI != null)
-    {
-        gameCompleteUI.ShowGameComplete();
-    }
-    else
-    {
-        Debug.LogError(
-            "Game Complete UI is NOT assigned!"
-        );
-    }
-    // Temporarily stop gameplay.
-    //Time.timeScale = 0f;
-}
-public void RestartEntireGame()
-{
-    Time.timeScale = 1f;
+        Debug.Log("==============================");
+        Debug.Log("GAME COMPLETED!");
+        Debug.Log("==============================");
 
-    SceneManager.LoadScene("Level1");
-}
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+
+        if (timer != null)
+        {
+            timer.StopTimer();
+        }
+
+        if (gameCompleteUI != null)
+        {
+            gameCompleteUI.ShowGameComplete();
+        }
+        else
+        {
+            Debug.LogError(
+                "Game Complete UI is NOT assigned!"
+            );
+        }
+    }
+
+    public void RestartEntireGame()
+    {
+        Time.timeScale = 1f;
+
+        SceneManager.LoadScene("Level1");
+    }
+
+    public void ReturnToMainMenu()
+    {
+        Time.timeScale = 1f;
+
+        SceneManager.LoadScene("MainMenu");
+    }
+
     public bool HasWon()
     {
         return levelWon;
@@ -239,11 +210,4 @@ public void RestartEntireGame()
     {
         return levelLost;
     }
-
-    public void ReturnToMainMenu()
-{
-    Time.timeScale = 1f;
-
-    SceneManager.LoadScene("MainMenu");
-}
 }
